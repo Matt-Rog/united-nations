@@ -8,6 +8,11 @@ const UserSchema = new mongoose.Schema({
     salt: { type: String, select: false },
     sessionToken: { type: String, select: false },
   },
+  identities: {
+    discord_user_id: { type: String },
+  },
+  games: { type: Array },
+  players: { type: Array },
 });
 
 export const UserModel = mongoose.model("User", UserSchema);
