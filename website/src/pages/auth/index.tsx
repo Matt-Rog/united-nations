@@ -45,12 +45,12 @@ export default function IndexAuth() {
         <Text color="dimmed" size="sm" align="center" mt={5}>
           Do not have an account yet?{" "}
           <Anchor size="sm" component="button">
-            <a
+            <Link
               href="/auth/register"
               style={{ textDecoration: "none", color: theme.colors.blue[4] }}
             >
               <Text>Create account</Text>
-            </a>
+            </Link>
           </Anchor>
         </Text>
 
