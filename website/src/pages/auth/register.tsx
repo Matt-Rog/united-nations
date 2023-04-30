@@ -65,12 +65,12 @@ export default function Register() {
         <Text color="dimmed" size="sm" align="center" mt={5}>
           Already have an account?{" "}
           <Anchor size="sm" component="button">
-            <a
+            <Link
               href="/auth"
               style={{ textDecoration: "none", color: theme.colors.blue[4] }}
             >
               <Text>Log in</Text>
-            </a>
+            </Link>
           </Anchor>
         </Text>
 
