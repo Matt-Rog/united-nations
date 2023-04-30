@@ -41,11 +41,11 @@ export const register = async (req: express.Request, res: express.Response) => {
   try {
     const { email, password, username, discord_id } = req.body;
     if (!email || !password || !username) {
-      return res.sendStatus(400);
+      return res.status(400).json({ message: "Incomplete fields" });
     }
     const user = await getUserByEmail(email);
     if (user) {
-      return res.sendStatus(400);
+      return res.status(400).json({ message: "User already exists" });
     }
     const salt = random();
     const newUser = await createUser({
