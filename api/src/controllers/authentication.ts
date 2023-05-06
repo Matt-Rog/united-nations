@@ -1,22 +1,30 @@
 import express from "express";
-import { createUser, getUserByEmail } from "../db/users";
+import {
+  createUser,
+  getUserByEmail,
+  getUserById,
+  updateUserById,
+} from "../db/users";
 import { authentication, random } from "../helpers";
 
 export const login = async (req: express.Request, res: express.Response) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      return res.sendStatus(400);
+      return res.status(400).json({
+        message: "Incomplete form data",
+        body: JSON.stringify(req.body),
+      });
     }
     const user = await getUserByEmail(email).select(
       "+authentication.salt +authentication.password"
     );
     if (!user) {
-      return res.sendStatus(400);
+      return res.status(400).json({ message: "User does not exist" });
     }
     const expectedHash = authentication(user.authentication.salt, password);
     if (user.authentication.password !== expectedHash.toString()) {
-      return res.sendStatus(403);
+      return res.status(403).json({ message: "Incorrect email or password" });
     }
     const salt = random();
     user.authentication.sessionToken = authentication(
@@ -39,7 +47,7 @@ export const login = async (req: express.Request, res: express.Response) => {
 
 export const register = async (req: express.Request, res: express.Response) => {
   try {
-    const { email, password, username, discord_id } = req.body;
+    const { email, password, username } = req.body;
     if (!email || !password || !username) {
       return res.status(400).json({ message: "Incomplete fields" });
     }
@@ -48,15 +56,21 @@ export const register = async (req: express.Request, res: express.Response) => {
       return res.status(400).json({ message: "User already exists" });
     }
     const salt = random();
-    const newUser = await createUser({
+    let newUser = await createUser({
       email,
       username,
       authentication: {
         salt,
         password: authentication(salt, password),
       },
+      identities: {
+        discord_user_id: 0,
+      },
     });
-    return res.status(200).json(newUser).end();
+    const pfp_user = await getUserByEmail(newUser.email);
+    pfp_user.pfp_url = `https://source.boringavatars.com/beam/120/${newUser._id}?colors=61d4b0,8ee696,baf77c,e8ff65,ecedd5&square`;
+    await pfp_user.save();
+    return res.status(200).json(pfp_user).end();
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);
