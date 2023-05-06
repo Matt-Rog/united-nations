@@ -1,5 +1,12 @@
 import express, { response } from "express";
-import { deleteUserById, getUserById, getUsers } from "../db/users";
+import {
+  deleteUserById,
+  getUserById,
+  getUsers,
+  getUserByEmail,
+} from "../db/users";
+import users from "router/users";
+import { getGameById } from "../db/games";
 
 export const getAllUsers = async (
   req: express.Request,
@@ -45,5 +52,45 @@ export const deleteUser = async (
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);
+  }
+};
+
+export const getUserByProp = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const { id, email } = req.params;
+    let user = {};
+    if (email) {
+      user = await getUserByEmail(email);
+    } else if (id) {
+      user = await getUserById(id);
+    }
+    return res.status(200).json(user).end();
+  } catch (error) {
+    return res.status(400);
+  }
+};
+
+export const getUserGames = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const { id } = req.params;
+    let user = await getUserById(id);
+    if (user) {
+      let games = [];
+      for (let i = 0; i < user.games.length; i++) {
+        let game = await getGameById(user.games[i]);
+        games.push(game);
+      }
+      return res.status(200).json(games).end();
+    } else {
+      return res.status(400);
+    }
+  } catch (error) {
+    return res.status(400);
   }
 };
