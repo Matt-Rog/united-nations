@@ -10,9 +10,13 @@ import { Roboto, RobotoMono } from "@/lib/CustomFonts";
 import { useState } from "react";
 import { getCookie, setCookie } from "cookies-next";
 import { useHotkeys } from "@mantine/hooks";
+import { Session } from "next-auth";
+import { SessionProvider } from "next-auth/react";
 
-export default function App(props: AppProps) {
-  const { Component, pageProps } = props;
+export default function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps<{ session: Session }>) {
   const theme = useMantineTheme();
   const [colorScheme, setColorScheme] = useState<ColorScheme>("dark");
 
@@ -54,7 +58,9 @@ export default function App(props: AppProps) {
             },
           }}
         >
-          <Component {...pageProps} />
+          <SessionProvider session={session}>
+            <Component {...pageProps} />
+          </SessionProvider>
         </MantineProvider>
       </ColorSchemeProvider>
     </>
