@@ -6,6 +6,7 @@ import {
   updateUserById,
 } from "../db/users";
 import { authentication, random } from "../helpers";
+import url from "url";
 
 export const login = async (req: express.Request, res: express.Response) => {
   try {
@@ -83,14 +84,24 @@ export const register_discord = async (
   try {
     const { code } = req.query;
     if (code) {
-      const formData = {
-        client_id: process.env.CLIENT_ID,
-        client_secret: process.env.TOKEN,
-        grant_type: "authorization_code",
-        code,
-        redirect_uri: "https://api.un.mattrog.com/auth/discord/redirect",
-      };
-      const response = await fetch("https://discord.com/api/oauth2/token");
+      try {
+        var formData = new url.URLSearchParams({
+          client_id: process.env.CLIENT_ID,
+          client_secret: process.env.TOKEN,
+          grant_type: "authorization_code",
+          code: code.toString(),
+          redirect_uri: "https://api.un.mattrog.com/auth/discord/redirect",
+        });
+        const response = await fetch("https://discord.com/api/oauth2/token", {
+          body: formData.toString(),
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        });
+        res.send(response.json());
+      } catch (error) {
+        res.send(400);
+      }
     }
     const { email, password, username } = req.body;
     if (!email || !password || !username) {
