@@ -68,7 +68,7 @@ export const register = async (req: express.Request, res: express.Response) => {
       },
     });
     const pfp_user = await getUserByEmail(newUser.email);
-    pfp_user.pfp_url = `https://source.boringavatars.com/beam/120/${newUser._id}?colors=61d4b0,8ee696,baf77c,e8ff65,ecedd5&square`;
+    pfp_user.pfp_url = `https://source.boringavatars.com/beam/120/${newUser._id}?colors=61d4b0,8ee696,baf77c,e8ff65,ecedd5`;
     await pfp_user.save();
     return res.status(200).json(pfp_user).end();
   } catch (error) {
@@ -82,6 +82,16 @@ export const register_discord = async (
 ) => {
   try {
     const { code } = req.query;
+    if (code) {
+      const formData = {
+        client_id: process.env.CLIENT_ID,
+        client_secret: process.env.TOKEN,
+        grant_type: "authorization_code",
+        code,
+        redirect_uri: "https://api.un.mattrog.com/auth/discord/redirect",
+      };
+      const response = await fetch("https://discord.com/api/oauth2/token");
+    }
     const { email, password, username } = req.body;
     if (!email || !password || !username) {
       return res.status(400).json({ message: "Incomplete fields" });
@@ -103,7 +113,7 @@ export const register_discord = async (
       },
     });
     const pfp_user = await getUserByEmail(newUser.email);
-    pfp_user.pfp_url = `https://source.boringavatars.com/beam/120/${newUser._id}?colors=61d4b0,8ee696,baf77c,e8ff65,ecedd5&square`;
+    pfp_user.pfp_url = `https://source.boringavatars.com/beam/120/${newUser._id}?colors=61d4b0,8ee696,baf77c,e8ff65,ecedd5`;
     await pfp_user.save();
     return res.status(200).json(pfp_user).end();
   } catch (error) {
