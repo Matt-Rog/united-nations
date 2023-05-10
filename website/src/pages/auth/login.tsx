@@ -15,51 +15,34 @@ import {
   Group,
   Checkbox,
   useMantineTheme,
-  rem,
   Divider,
+  rem,
 } from "@mantine/core";
 import Link from "next/link";
 import { useState } from "react";
-import { setegid } from "process";
 import { base_url } from "@/utils/api";
-import { Router, useRouter } from "next/router";
+import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import { IconBrandDiscord, IconBrandDiscordFilled } from "@tabler/icons-react";
 
 const inter = Inter({ subsets: ["latin"] });
 let un_emblem = "/static/images/un_emblem.png";
 
-export default function Register() {
-  const [username, setUsername] = useState("");
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const theme = useMantineTheme();
   const router = useRouter();
 
-  async function register_account() {
-    const response = await fetch("/api/un", {
-      method: "POST",
-      body: JSON.stringify({
-        method: "POST",
-        endpoint: "/auth/register",
-        payload: { username, password, email },
-      }),
+  async function login() {
+    const res = await signIn("credentials", {
+      email: email,
+      password: password,
+      redirect: true,
+      callbackUrl: "/dashboard",
     });
-    const data = await response.json();
-    if (!response.ok) {
-      setError(data.message);
-    } else {
-      const res = await signIn("credentials", {
-        email: email,
-        password: password,
-        redirect: true,
-        callbackUrl: "/dashboard",
-      });
-    }
   }
-
   return (
     <>
       <Head>
@@ -78,30 +61,22 @@ export default function Register() {
         </Container>
         <Title align="center">UNITED NATIONS</Title>
         <Text color="dimmed" size="sm" align="center" mt={5}>
-          Already have an account?{" "}
+          Do not have an account yet?{" "}
           <Anchor size="sm" component="button">
             <Link
-              href="/auth/login"
+              href="/auth/register"
               style={{ textDecoration: "none", color: theme.colors.blue[4] }}
             >
-              <Text>Log in</Text>
+              <Text>Create account</Text>
             </Link>
           </Anchor>
         </Text>
 
         <Paper withBorder shadow="md" p={30} mt={30} radius="md">
           <TextInput
-            label="Username"
-            placeholder="xX_EPIC-GAMER_Xx"
-            required
-            value={username}
-            onChange={(event) => setUsername(event.currentTarget.value)}
-          />
-          <TextInput
             label="Email"
             placeholder="you@email.com"
             required
-            mt={"md"}
             value={email}
             onChange={(event) => setEmail(event.currentTarget.value)}
           />
@@ -113,14 +88,13 @@ export default function Register() {
             value={password}
             onChange={(event) => setPassword(event.currentTarget.value)}
           />
-          <PasswordInput
-            placeholder="Retype password"
-            mt="sm"
-            value={confirmPassword}
-            onChange={(event) => setConfirmPassword(event.currentTarget.value)}
-          />
-
-          {error !== "" ? (
+          <Group position="apart" mt="lg">
+            {/* <Checkbox label="Remember me" /> */}
+            {/* <Anchor component="button" size="sm">
+              Forgot password?
+            </Anchor> */}
+          </Group>
+          {error === "" ? undefined : (
             <Text
               sx={{ color: theme.colors.red[4] }}
               ff={"monospace"}
@@ -128,19 +102,14 @@ export default function Register() {
             >
               {error}
             </Text>
-          ) : undefined}
+          )}
           <Button
             fullWidth
             mt="xl"
-            disabled={
-              password === "" ||
-              username === "" ||
-              email === "" ||
-              password !== confirmPassword
-            }
-            onClick={() => register_account()}
+            disabled={email === "" || password === ""}
+            onClick={() => login()}
           >
-            SIGN UP
+            LOG IN
           </Button>
           <Divider label={"OR"} labelPosition="center" mt={"sm"} mb={"sm"} />
           <Button
@@ -164,7 +133,7 @@ export default function Register() {
               },
             })}
           >
-            SIGN UP WITH DISCORD
+            CONTINUE WITH DISCORD
           </Button>
         </Paper>
       </Container>

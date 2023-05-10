@@ -30,14 +30,20 @@
     "@types/node": "18.16.3",
     "@types/react": "18.2.0",
     "@types/react-dom": "18.2.1",
+    "boring-avatars": "^1.7.0",
     "cookies-next": "^2.1.1",
     "dayjs": "^1.11.7",
     "embla-carousel-react": "^8.0.0-rc02",
     "eslint": "8.39.0",
     "eslint-config-next": "13.3.2",
+    "js-cookie": "^3.0.5",
     "next": "13.3.2",
+    "next-auth": "^4.22.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "typescript": "5.0.4"
+  },
+  "devDependencies": {
+    "@types/js-cookie": "^3.0.3"
   }
 }
