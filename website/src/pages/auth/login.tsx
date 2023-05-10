@@ -15,14 +15,15 @@ import {
   Group,
   Checkbox,
   useMantineTheme,
+  Divider,
+  rem,
 } from "@mantine/core";
 import Link from "next/link";
 import { useState } from "react";
 import { base_url } from "@/utils/api";
 import { useRouter } from "next/router";
-import { setAuthToken } from "@/pages/api/cookie";
-import { setCookie } from "cookies-next";
 import { signIn } from "next-auth/react";
+import { IconBrandDiscord, IconBrandDiscordFilled } from "@tabler/icons-react";
 
 const inter = Inter({ subsets: ["latin"] });
 let un_emblem = "/static/images/un_emblem.png";
@@ -109,6 +110,30 @@ export default function Login() {
             onClick={() => login()}
           >
             LOG IN
+          </Button>
+          <Divider label={"OR"} labelPosition="center" mt={"sm"} mb={"sm"} />
+          <Button
+            fullWidth
+            color={"#5865F2"}
+            leftIcon={<IconBrandDiscordFilled size={rem(18)} />}
+            styles={(theme) => ({
+              root: {
+                backgroundColor: "#5865F2",
+                border: 0,
+                height: rem(42),
+                paddingLeft: rem(20),
+                paddingRight: rem(20),
+                "&:not([data-disabled])": theme.fn.hover({
+                  backgroundColor: theme.fn.darken("#5865F2", 0.05),
+                }),
+              },
+
+              leftIcon: {
+                marginRight: theme.spacing.md,
+              },
+            })}
+          >
+            CONTINUE WITH DISCORD
           </Button>
         </Paper>
       </Container>
