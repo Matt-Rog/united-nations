@@ -76,3 +76,38 @@ export const register = async (req: express.Request, res: express.Response) => {
     return res.sendStatus(400);
   }
 };
+export const register_discord = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const { code } = req.query;
+    const { email, password, username } = req.body;
+    if (!email || !password || !username) {
+      return res.status(400).json({ message: "Incomplete fields" });
+    }
+    const user = await getUserByEmail(email);
+    if (user) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+    const salt = random();
+    let newUser = await createUser({
+      email,
+      username,
+      authentication: {
+        salt,
+        password: authentication(salt, password),
+      },
+      identities: {
+        discord_user_id: 0,
+      },
+    });
+    const pfp_user = await getUserByEmail(newUser.email);
+    pfp_user.pfp_url = `https://source.boringavatars.com/beam/120/${newUser._id}?colors=61d4b0,8ee696,baf77c,e8ff65,ecedd5&square`;
+    await pfp_user.save();
+    return res.status(200).json(pfp_user).end();
+  } catch (error) {
+    console.log(error);
+    return res.sendStatus(400);
+  }
+};
