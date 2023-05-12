@@ -6,6 +6,7 @@ export interface UserSchema {
   id: string; // randomUUID()
   username: string;
   email: string;
+  createdAt: string;
   avatarUrl: string;
   discord: DiscordInfo; // {\"id\": string, \"access_token\": string}
 }
@@ -65,8 +66,11 @@ export const createUser = async (u: any) => {
         id: randomUUID(),
         username: $username,
         email: $email,
+        createdAt: ${Date.now()},
         avatarUrl: $avatarUrl,
-        discord: "{\\"id\\": \\"${u.discord.id}\\", \\"accessToken\\": \\"${u.discord.accessToken}\\" }"
+        discord: "{\\"id\\": \\"${u.discord.id}\\", \\"accessToken\\": \\"${
+      u.discord.accessToken
+    }\\" }"
       })
       RETURN u`,
     {
@@ -84,7 +88,8 @@ export const updateUserById = async (id: string, u: any) => {
     `MATCH (u:User {id: '${id}'})
             SET u.username= '${u.username}',
             u.email= '${u.email}',
-            u.avatarUrl= '${u.avatar_url}',
+            u.createdAt= '${u.createdAt}',
+            u.avatarUrl= '${u.avatarUrl}',
             u.discord= "{\\"id\\": \\"${u.discord.id}\\", \\"accessToken\\": \\"${u.discord.accessToken}\\" }"
         RETURN u`
   );
