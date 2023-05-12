@@ -27,6 +27,50 @@ export const authOptions: NextAuthOptions = {
     signIn: "/auth",
     signOut: "/auth",
   },
+
+  callbacks: {
+    async session({ session }) {
+      // Update the user object in the session with un api data
+      console.log("SESSION");
+      console.log(session.user);
+      if (session.user?.email) {
+        var res = await fetch(`${web_url}/api/un`, {
+          method: "POST",
+          body: JSON.stringify({
+            method: "GET",
+            endpoint: `/users/${session.user.email}`,
+          }),
+        });
+        const user = await res.json();
+        console.log("NEW SESSION USER");
+        console.log(user);
+        session.user = user;
+      }
+      // Return the updated session object
+      return session;
+    },
+    async signIn({ user, account, profile, email }) {
+      if (account) {
+        const { access_token } = account;
+        var res = await fetch(`${web_url}/api/un`, {
+          method: "POST",
+          body: JSON.stringify({
+            method: "POST",
+            endpoint: "/auth",
+            params: [{ accessToken: access_token }],
+            payload: profile,
+          }),
+        });
+        if (res.status === 200) {
+          var un_user = await res.json();
+          console.log("USER");
+          console.log(un_user);
+          return Promise.resolve(true);
+        }
+      }
+      return Promise.resolve(false);
+    },
+  },
 };
 
 export default NextAuth(authOptions);

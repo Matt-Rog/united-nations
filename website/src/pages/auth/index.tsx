@@ -36,10 +36,7 @@ export default function Login() {
   const router = useRouter();
 
   async function login() {
-    const res = await signIn("credentials", {
-      email: email,
-      password: password,
-      redirect: true,
+    const res = await signIn("discord", {
       callbackUrl: "/dashboard",
     });
   }
@@ -63,6 +60,7 @@ export default function Login() {
 
         <Paper withBorder shadow="md" p={30} mt={30} radius="md">
           <Button
+            onClick={() => login()}
             fullWidth
             color={"#5865F2"}
             leftIcon={<IconBrandDiscordFilled size={rem(18)} />}
