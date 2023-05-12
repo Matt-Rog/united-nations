@@ -1,20 +1,20 @@
 import express from "express";
 
 import {
-  deleteUser,
+  // deleteUser,
   getAllUsers,
-  getUserByProp,
-  getUserGames,
-  updateUser,
+  // getUserByProp,
+  // getUserGames,
+  // updateUser,
 } from "../controllers/users";
 import { isApp, isAuthenticated, isOwner } from "../middlewares";
 
 export default (router: express.Router) => {
-  router.get("/users", isAuthenticated, getAllUsers);
-  router.get("/users/:email", isApp, getUserByProp);
-  router.get("/users/:id", isApp, getUserByProp);
-  router.get("/users/:id/games", isApp, getUserGames);
+  router.get("/users", isApp, getAllUsers);
+  // router.get("/users/:email", isApp, getUserByProp);
+  // router.get("/users/:id", isApp, getUserByProp);
+  // router.get("/users/:id/games", isApp, getUserGames);
 
-  router.delete("/users/:id", isAuthenticated, isOwner, deleteUser);
-  router.patch("/users/:id", isAuthenticated, isOwner, updateUser);
+  // router.delete("/users/:id", isAuthenticated, isOwner, deleteUser);
+  // router.patch("/users/:id", isAuthenticated, isOwner, updateUser);
 };
