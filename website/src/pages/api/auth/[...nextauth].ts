@@ -49,9 +49,7 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account, profile, email }) {
       if (account) {
         const { access_token } = account;
-        console.log("PROFILE >>>>>>>>>>>>>>>>");
-        console.log(profile);
-        console.log(web_url);
+
         var res = await fetch(`${web_url}/api/un`, {
           method: "POST",
           body: JSON.stringify({
@@ -61,8 +59,7 @@ export const authOptions: NextAuthOptions = {
             payload: profile,
           }),
         });
-        console.log("SIGNIN RESS");
-        console.log(res);
+
         if (res.status === 200) {
           return Promise.resolve(true);
         }
