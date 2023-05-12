@@ -7,6 +7,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import router from "./router";
+import neo4j from "neo4j-driver";
 dotenv.config();
 
 const app = express();
