@@ -1,13 +1,6 @@
 import express, { response } from "express";
-import {
-  deleteUserById,
-  // getUserById,
-  getUserByEmail,
-} from "../db/users";
 
-import { getUsers, getUserById } from "../db/models/users";
-import users from "router/users";
-import { getGameById } from "../db/games";
+import { getUsers, getUserById, getUserByEmail } from "../db/models/users";
 
 export const getAllUsers = async (
   req: express.Request,
@@ -19,6 +12,29 @@ export const getAllUsers = async (
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);
+  }
+};
+
+export const getUserByProp = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const { prop } = req.params;
+    const emailUser = await getUserByEmail(prop);
+    const idUser = await getUserById(prop);
+    var user;
+    if (emailUser) {
+      user = emailUser;
+    } else if (idUser) {
+      user = idUser;
+    }
+    if (user) {
+      return res.status(200).json(user).end();
+    }
+    return res.status(400).json({ message: "User not found" }).end();
+  } catch (error) {
+    return res.status(400).json({ message: "Error fetching user" }).end();
   }
 };
 
