@@ -50,7 +50,7 @@ export default function Login() {
         <meta name="description" content="United Nations Role-playing Game" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Container size={420} my={80}>
+      <Container size={420} my={100}>
         <Container size={100}>
           <Image
             src={un_emblem}
@@ -60,58 +60,8 @@ export default function Login() {
           />
         </Container>
         <Title align="center">UNITED NATIONS</Title>
-        <Text color="dimmed" size="sm" align="center" mt={5}>
-          Do not have an account yet?{" "}
-          <Anchor size="sm" component="button">
-            <Link
-              href="/auth/register"
-              style={{ textDecoration: "none", color: theme.colors.blue[4] }}
-            >
-              <Text>Create account</Text>
-            </Link>
-          </Anchor>
-        </Text>
 
         <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-          {/* <TextInput
-            label="Email"
-            placeholder="you@email.com"
-            required
-            value={email}
-            onChange={(event) => setEmail(event.currentTarget.value)}
-          />
-          <PasswordInput
-            label="Password"
-            placeholder="Your password"
-            required
-            mt="md"
-            value={password}
-            onChange={(event) => setPassword(event.currentTarget.value)}
-          />
-          <Group position="apart" mt="lg">
-            {/* <Checkbox label="Remember me" /> */}
-          {/* <Anchor component="button" size="sm">
-              Forgot password?
-            </Anchor> */}
-          {/* </Group>
-          {error === "" ? undefined : (
-            <Text
-              sx={{ color: theme.colors.red[4] }}
-              ff={"monospace"}
-              transform={"uppercase"}
-            >
-              {error}
-            </Text>
-          )}
-          <Button
-            fullWidth
-            mt="xl"
-            disabled={email === "" || password === ""}
-            onClick={() => login()}
-          >
-            LOG IN
-          </Button>
-          <Divider label={"OR"} labelPosition="center" mt={"sm"} mb={"sm"} /> */}
           <Button
             fullWidth
             color={"#5865F2"}
@@ -133,7 +83,7 @@ export default function Login() {
               },
             })}
           >
-            LOG IN WITH DISCORD
+            CONTINUE WITH DISCORD
           </Button>
         </Paper>
       </Container>

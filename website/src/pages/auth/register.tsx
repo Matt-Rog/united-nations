@@ -90,7 +90,7 @@ export default function Register() {
         </Text>
 
         <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-          <TextInput
+          {/* <TextInput
             label="Username"
             placeholder="xX_EPIC-GAMER_Xx"
             required
@@ -142,7 +142,7 @@ export default function Register() {
           >
             SIGN UP
           </Button>
-          <Divider label={"OR"} labelPosition="center" mt={"sm"} mb={"sm"} />
+          <Divider label={"OR"} labelPosition="center" mt={"sm"} mb={"sm"} /> */}
           <Button
             fullWidth
             color={"#5865F2"}
