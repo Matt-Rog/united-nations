@@ -1,7 +1,5 @@
-import { User } from "@/models/users";
 import { base_url, web_url } from "@/utils/api";
 import NextAuth, { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
 import DiscordProvider from "next-auth/providers/discord";
 
 const scopes = ["identify", "email", "guilds"].join(" ");
@@ -12,7 +10,6 @@ export const authOptions: NextAuthOptions = {
     DiscordProvider({
       clientId: process.env.DISCORD_CLIENT_ID || "1",
       clientSecret: process.env.DISCORD_CLIENT_SECRET || "1",
-      // scope: "identify email guilds",
       authorization: { params: { scope: scopes } },
     }),
   ],
@@ -52,6 +49,9 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account, profile, email }) {
       if (account) {
         const { access_token } = account;
+        console.log("PROFILE >>>>>>>>>>>>>>>>");
+        console.log(profile);
+        console.log(web_url);
         var res = await fetch(`${web_url}/api/un`, {
           method: "POST",
           body: JSON.stringify({
@@ -61,10 +61,9 @@ export const authOptions: NextAuthOptions = {
             payload: profile,
           }),
         });
+        console.log("SIGNIN RESS");
+        console.log(res);
         if (res.status === 200) {
-          var un_user = await res.json();
-          console.log("USER");
-          console.log(un_user);
           return Promise.resolve(true);
         }
       }
