@@ -1,6 +1,4 @@
-import { get } from "lodash";
 import { getSession } from "../conn";
-import discord from "router/discord";
 
 export interface UserSchema {
   id: string; // randomUUID()
@@ -55,14 +53,25 @@ export const getUserByDiscordId = async (discordId: string) => {
   var user = result.records[0]
     ? deserialize(result.records[0].get("u").properties)
     : undefined;
-  return user.discord.id == discordId ? user : undefined;
+  return user?.discord?.id == discordId ? user : undefined;
+};
+
+export const getUserByProp = async (prop: { [name: string]: any }) => {
+  let db = await getSession();
+  let name = Object.keys(prop)[0];
+  const result = await db.run(
+    `MATCH (u:User {${prop.name}: ${prop.name}}) RETURN u LIMIT 1`
+  );
+  return result.records[0]
+    ? deserialize(result.records[0].get("u").properties)
+    : undefined;
 };
 
 // WRITE //
 export const createUser = async (u: any) => {
   let db = await getSession();
   const result = await db.run(
-    `CREATE (u:User {
+    `MATCH (u:User {
         id: randomUUID(),
         username: $username,
         email: $email,
@@ -94,4 +103,14 @@ export const updateUserById = async (id: string, u: any) => {
         RETURN u`
   );
   return deserialize(result.records[0].get("u").properties);
+};
+
+export const addUserToGame = async (uid: string, gid: string) => {
+  let db = await getSession();
+  const result = await db.run(
+    `MATCH (u:User {id: '${uid}'}),(g:Game {id: '${gid}'})
+    MERGE (u)-[p:PLAYS_IN {joinedAt: '${Date.now()}'}]-(g)
+    RETURN p`
+  );
+  return result.records[0].get("p").properties;
 };
