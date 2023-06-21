@@ -1,0 +1,10 @@
+{
+  "name": "test",
+  "description": "test command",
+  "options": [{
+    "name": "name",
+    "description": "your name",
+    "type": 3,
+    "required": true
+  }]
+}
