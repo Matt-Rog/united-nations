@@ -10,6 +10,22 @@ function deserialize(g: GameSchema) {
   return g;
 }
 
+export const getGameByProp = async (prop: any) => {
+  let db = await getSession();
+  let key = Object.keys(prop)[0];
+  const result = await db.run(
+    `MATCH (g:Game {${key}: $value}) RETURN g LIMIT 1`,
+    {
+      value: prop[key],
+    }
+  );
+  await db.close();
+
+  return result.records[0]
+    ? deserialize(result.records[0].get("g").properties)
+    : undefined;
+};
+
 // WRITE
 export const createGame = async (g: any) => {
   let db = await getSession();
