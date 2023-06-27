@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-import { setDriver } from "mongoose";
 import neo4j from "neo4j-driver";
 dotenv.config();
 
