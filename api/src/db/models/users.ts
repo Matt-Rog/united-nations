@@ -1,4 +1,5 @@
 import { getSession } from "../conn";
+import { GameSchema } from "./games";
 
 export interface UserSchema {
   id: string; // randomUUID()
@@ -22,6 +23,8 @@ function deserialize(u: UserSchema) {
 export const getUsers = async () => {
   let db = await getSession();
   const result = await db.run(`Match (u:User) return u`);
+  await db.close();
+
   return result.records.map((i: any) => deserialize(i.get("u").properties));
 };
 
@@ -30,6 +33,8 @@ export const getUserById = async (id: string) => {
   const result = await db.run(
     `MATCH (u:User {id : '${id}'} ) return u limit 1`
   );
+  await db.close();
+
   return result.records[0]
     ? deserialize(result.records[0].get("u").properties)
     : undefined;
@@ -40,6 +45,8 @@ export const getUserByEmail = async (email: string) => {
   const result = await db.run(
     `MATCH (u:User {email: '${email}'}) return u limit 1`
   );
+  await db.close();
+
   return result.records[0]
     ? deserialize(result.records[0].get("u").properties)
     : undefined;
@@ -53,15 +60,22 @@ export const getUserByDiscordId = async (discordId: string) => {
   var user = result.records[0]
     ? deserialize(result.records[0].get("u").properties)
     : undefined;
+  await db.close();
+
   return user?.discord?.id == discordId ? user : undefined;
 };
 
-export const getUserByProp = async (prop: { [name: string]: any }) => {
+export const getUserByProp = async (prop: any) => {
   let db = await getSession();
-  let name = Object.keys(prop)[0];
+  let key = Object.keys(prop)[0];
   const result = await db.run(
-    `MATCH (u:User {${prop.name}: ${prop.name}}) RETURN u LIMIT 1`
+    `MATCH (u:User {${key}: $value}) RETURN u LIMIT 1`,
+    {
+      value: prop[key],
+    }
   );
+  await db.close();
+
   return result.records[0]
     ? deserialize(result.records[0].get("u").properties)
     : undefined;
@@ -88,6 +102,8 @@ export const createUser = async (u: any) => {
       avatarUrl: u.avatarUrl,
     }
   );
+  await db.close();
+
   return deserialize(result.records[0].get("u").properties);
 };
 
@@ -102,15 +118,19 @@ export const updateUserById = async (id: string, u: any) => {
             u.discord= "{\\"id\\": \\"${u.discord.id}\\", \\"accessToken\\": \\"${u.discord.accessToken}\\" }"
         RETURN u`
   );
+  await db.close();
+
   return deserialize(result.records[0].get("u").properties);
 };
 
-export const addUserToGame = async (uid: string, gid: string) => {
+export const addUserToGame = async (u: any, g: any) => {
   let db = await getSession();
   const result = await db.run(
-    `MATCH (u:User {id: '${uid}'}),(g:Game {id: '${gid}'})
-    MERGE (u)-[p:PLAYS_IN {joinedAt: '${Date.now()}'}]-(g)
-    RETURN p`
+    `MATCH (u:User {id: '${u.id}'}),(g:Game {id: '${g.id}'})
+    MERGE (u)-[c:CAN_ACCESS {joinedAt: '${Date.now()}'}]-(g)
+    RETURN c`
   );
-  return result.records[0].get("p").properties;
+  await db.close();
+
+  return result.records[0].get("c").properties;
 };
