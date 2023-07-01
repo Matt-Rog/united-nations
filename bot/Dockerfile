@@ -1,11 +1,14 @@
-FROM node:15.4
+# Use the official Python base image
+FROM python:3.9-slim
 
+# Set the working directory inside the container
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
-COPY . .
-ENV NODE_ENV=production
-EXPOSE 8080
+# Copy the Python script and other necessary files
+COPY main.py requirements.txt ./
 
-CMD ["node", "."]
+# Install the required Python packages
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Run the Python script with the Discord bot and the HTTP server
+CMD [ "python", "main.py" ]
