@@ -32,7 +32,17 @@ class Bot(commands.Bot):
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
-    pass
+    def do_GET(self):
+        if self.path == "/":
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            self.wfile.write(b"Hello, world!")  # Replace with your desired response
+        else:
+            self.send_response(404)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            self.wfile.write(b"404 Not Found")  # Replace with your desired response
 
 with socketserver.TCPServer(("", 8000), Handler) as httpd:
     print("Server started at localhost:" + str(8000))
