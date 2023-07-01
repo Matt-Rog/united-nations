@@ -5,7 +5,7 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copy the Python script and other necessary files
-COPY main.py requirements.txt ./
+COPY . /app/
 
 # Install the required Python packages
 RUN pip install --no-cache-dir -r requirements.txt
