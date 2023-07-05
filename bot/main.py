@@ -15,8 +15,10 @@ token = os.environ.get('DEV_TOKEN') or os.environ.get('TOKEN')
 
 class Bot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix=commands.when_mentioned_or('!'), intents=discord.Intents.default())
-        self.cogs_list = ["cogs.util", "cogs.auth"]
+        intents = discord.Intents.default()
+        intents.members = True
+        super().__init__(command_prefix=commands.when_mentioned_or('!'), intents=intents)
+        self.cogs_list = ["cogs.util", "cogs.auth", "cogs.game"]
 
     async def setup_hook(self):
         for ext in self.cogs_list:
