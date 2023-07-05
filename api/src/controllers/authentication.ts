@@ -18,9 +18,10 @@ export const auth = async (req: express.Request, res: express.Response) => {
     var user = await getUserByEmail(email);
     if (user) {
       // LOGIN
+      // User already has email, complete user
       // Check email & discord id correct
-      var byDiscordUser = await getUserByDiscordId(id);
-      if (byDiscordUser.id == user.id) {
+      var userByDiscord = await getUserByDiscordId(id);
+      if (userByDiscord.id == user.id) {
         user.discord.accessToken = accessToken;
         user = await updateUserById(user.id, user);
         return res.status(200).json(user).end();
@@ -29,6 +30,21 @@ export const auth = async (req: express.Request, res: express.Response) => {
       }
     } else {
       // REGISTER
+      // Check for existing temp accounts by Discord id
+      var userByDiscord = await getUserByDiscordId(id);
+      if (userByDiscord) {
+        // Merge account data
+        userByDiscord.username = username;
+        userByDiscord.email = email;
+        userByDiscord.avatarUrl =
+          avatar !== undefined
+            ? `https://cdn.discordapp.com/avatars/${id}/${avatar}`
+            : `https://source.boringavatars.com/beam/120/${id}?colors=61d4b0,8ee696,baf77c,e8ff65,ecedd5`;
+        userByDiscord.discord.accessToken = accessToken;
+        userByDiscord = await updateUserById(userByDiscord.id, userByDiscord);
+        return res.status(200).json(userByDiscord).end();
+      }
+      // Totally new account
       var newUser = {
         username,
         email,

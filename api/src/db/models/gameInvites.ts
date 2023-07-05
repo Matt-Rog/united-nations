@@ -19,7 +19,20 @@ export const getGameInviteByProp = async (prop: any) => {
   );
   await db.close();
 
-  return result.records[0].get("i").properties;
+  return result.records[0] ? result.records[0].get("i").properties : undefined;
+};
+
+export const getGameInviteByGameAndUser = async (g: any, u: any) => {
+  let db = await getSession();
+  const result = await db.run(
+    `MATCH (u:User {id: $userId})-[i:IS_INVITED_TO]->(g:Game {id: $gameId})
+      RETURN i
+      LIMIT 1`,
+    { userId: u.id, gameId: g.id }
+  );
+  await db.close();
+
+  return result.records[0] ? result.records[0].get("i").properties : undefined;
 };
 
 export const createGameInvite = async (g: any, u: any, expires: any) => {

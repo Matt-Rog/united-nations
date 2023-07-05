@@ -1,47 +1,35 @@
 import { Button, Space, Stack, Text, Title } from "@mantine/core";
 import React, { useEffect, useState } from "react";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { getSession, signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { base_url, web_url } from "@/utils/api";
+import type { GetServerSidePropsContext } from "next";
 
-export default function DashboardIndex() {
-  // const { data: session } = useSession();
-  // const session: any = useSession();
-  const { data: session }: any = useSession();
-  // const [user, setUser] = useState<any>({});
-  // const [games, setGames] = useState<any>([]);
-  // const [userData, setUserData] = useState();
+interface DashboardProps {
+  session: any;
+  games: any;
+}
 
-  // useEffect(() => {
-  //   if (session?.user?.data !== undefined) {
-  //     console.log(session.user.data._id);
-  //     fetch("/api/un", {
-  //       method: "POST",
-  //       body: JSON.stringify({
-  //         method: "GET",
-  //         endpoint: "/users/" + session.user.data._id + "/games",
-  //       }),
-  //     })
-  //       .then((res) => res.json())
-  //       .then((data) => {
-  //         console.log(data);
-  //         setGames(data);
-  //       });
-  //   }
-  // }, [session]);
-
+export default function DashboardIndex({ user, games }: any) {
+  console.log(user);
   return (
     <div>
-      {session?.user ? (
-        <>
-          <Title>{session.user.username}</Title>
-          <Link href={"/dashboard/me"}>
-            <Button variant="outline">Account settings</Button>
-          </Link>
-        </>
-      ) : undefined}
+      <>
+        <Title>{user.username}</Title>
+        <Link href={"/dashboard/me"}>
+          <Button variant="outline">Account settings</Button>
+        </Link>
+      </>
+      {games.map((game: any) => {
+        return (
+          <div>
+            <Title>{game.name}</Title>
+          </div>
+        );
+      })}
 
       <Space h={100} />
-      {session?.user ? (
+      {user ? (
         <Button onClick={() => signOut({ callbackUrl: "/auth" })}>
           SIGN OUT
         </Button>
@@ -50,4 +38,26 @@ export default function DashboardIndex() {
       )}
     </div>
   );
+}
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session: any = await getSession(context);
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/auth",
+        permanent: false,
+      },
+    };
+  }
+  var res = await fetch(`${web_url}/api/un`, {
+    method: "POST",
+    body: JSON.stringify({
+      method: "GET",
+      endpoint: `/users/${session.user.id}/games`,
+    }),
+  });
+  var user = session.user;
+  const games = await res.json();
+  return { props: { user, games } };
 }

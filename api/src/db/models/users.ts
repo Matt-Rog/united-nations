@@ -55,7 +55,7 @@ export const getUserByEmail = async (email: string) => {
 export const getUserByDiscordId = async (discordId: string) => {
   let db = await getSession();
   const result = await db.run(`MATCH (u:User) 
-    WHERE u.discord CONTAINS '${discordId}'
+    WHERE u.discord CONTAINS '${String(discordId)}'
     return u limit 1`);
   var user = result.records[0]
     ? deserialize(result.records[0].get("u").properties)
@@ -84,8 +84,9 @@ export const getUserByProp = async (prop: any) => {
 // WRITE //
 export const createUser = async (u: any) => {
   let db = await getSession();
+  console.log(u);
   const result = await db.run(
-    `MATCH (u:User {
+    `MERGE (u:User {
         id: randomUUID(),
         username: $username,
         email: $email,
@@ -103,8 +104,9 @@ export const createUser = async (u: any) => {
     }
   );
   await db.close();
-
-  return deserialize(result.records[0].get("u").properties);
+  return result.records[0]
+    ? deserialize(result.records[0].get("u").properties)
+    : undefined;
 };
 
 export const updateUserById = async (id: string, u: any) => {
@@ -133,4 +135,17 @@ export const addUserToGame = async (u: any, g: any) => {
   await db.close();
 
   return result.records[0].get("c").properties;
+};
+
+export const getUserGames = async (u: any) => {
+  let db = await getSession();
+  const result = await db.run(
+    `MATCH (u:User {id: '${u.id}'})-[:CAN_ACCESS]->(g:Game)
+    RETURN g`
+  );
+  await db.close();
+  console.log(result.records);
+  let games = result.records.map((record) => record.get("g").properties);
+  console.log(games);
+  return games;
 };
