@@ -26,11 +26,11 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async session({ session }) {
+    async session({ session }: any) {
       // Update the user object in the session with un api data
-      console.log("SESSION");
-      console.log(session.user);
-      if (session.user?.email) {
+      if (session.user?.email && session.user.createdAt === undefined) {
+        console.log("SESSION");
+        console.log(session.user);
         var res = await fetch(`${web_url}/api/un`, {
           method: "POST",
           body: JSON.stringify({
@@ -49,7 +49,6 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account, profile, email }) {
       if (account) {
         const { access_token } = account;
-
         var res = await fetch(`${web_url}/api/un`, {
           method: "POST",
           body: JSON.stringify({
