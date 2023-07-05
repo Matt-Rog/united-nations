@@ -22,7 +22,7 @@ export default function DashboardIndex({ user, games }: any) {
       </>
       {games.map((game: any) => {
         return (
-          <div>
+          <div key={Date.now() * 3}>
             <Title>{game.name}</Title>
           </div>
         );
