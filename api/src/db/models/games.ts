@@ -4,6 +4,8 @@ export interface GameSchema {
   id: string; // randomUUID()
   name: string;
   createdAt: string;
+  guildId: string;
+  owner: string;
 }
 
 function deserialize(g: GameSchema) {
@@ -34,13 +36,29 @@ export const createGame = async (g: any) => {
         id: randomUUID(),
         name: $name,
         owner: $owner,
+        guildId: $guildId,
         createdAt: ${Date.now()}
       })
       RETURN g`,
     {
       name: g.name,
       owner: g.owner,
+      guildId: g.guildId,
     }
   );
+  await db.close();
+
   return deserialize(result.records[0].get("g").properties);
+};
+
+export const deleteGameById = async (gameId: string) => {
+  let db = await getSession();
+  const result = await db.run(
+    `MATCH (g:Game {id: $gameId})
+      DETACH DELETE g`,
+    {
+      gameId,
+    }
+  );
+  await db.close();
 };
